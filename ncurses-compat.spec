@@ -8,7 +8,7 @@
 Name:       ncurses-compat
 Summary:    See the file ANNOUNCE for a summary of ncurses features and ports
 Version:    5.9
-Release:    28
+Release:    29
 Group:      System/Libraries
 License:    MIT
 URL:        http://mirrors.kernel.org/gnu/ncurses/ncurses-5.9.tar.gz
