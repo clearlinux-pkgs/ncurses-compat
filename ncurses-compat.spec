@@ -8,7 +8,7 @@
 Name:       ncurses-compat
 Summary:    See the file ANNOUNCE for a summary of ncurses features and ports
 Version:    5.9
-Release:    30
+Release:    31
 Group:      System/Libraries
 License:    MIT
 URL:        http://mirrors.kernel.org/gnu/ncurses/ncurses-5.9.tar.gz
@@ -17,6 +17,11 @@ Patch0:     ncurses-5.9-gcc5_buildfixes-1.patch
 Requires:   ncurses-lib
 Requires:   ncurses-lib-narrow
 BuildRequires:  python-dev pkg-config-dev
+BuildRequires : gcc-dev32
+BuildRequires : gcc-libgcc32
+BuildRequires : gcc-libstdc++32
+BuildRequires : glibc-dev32
+BuildRequires : glibc-libc32
 
 
 %description
@@ -34,6 +39,14 @@ Requires:   ncurses-data
 %description lib
 Library files for the ncurses package
 
+%package lib32
+Summary:    Library components for the ncurses package
+Group:      Libraries
+Requires:   ncurses-data
+
+%description lib32
+Library files for the ncurses package
+
 %package lib-narrow
 Summary:    Library components for the ncurses package
 Group:      Libraries
@@ -45,6 +58,14 @@ Library files for the ncurses package
 %prep
 %setup -q -n ncurses-5.9
 %patch0 -p1
+pushd ../
+cp -a ncurses-5.9 build32
+cp -a ncurses-5.9 build32w
+cp -a ncurses-5.9 ncurses-5.9w
+popd
+
+
+
 
 # >> setup
 # << setup
@@ -54,32 +75,61 @@ Library files for the ncurses package
 # << build pre
 
 export CFLAGS="$CFLAGS -Os -ffunction-sections"
+export CXXFLGAGS="$CXXFLAGS -std=gnu++98 "
 
 %configure --disable-static \
-    --with-shared --with-termlib --with-progs --enable-pc-files --with-pkg-config=/usr/bin/pkg-config
+    --with-shared --with-termlib --with-progs --enable-pc-files --with-pkg-config=/usr/bin/pkg-config --without-cxx-binding
 
-make V=1 -j8
+make V=1 -j20
+
+pushd ../ncurses-5.9w
+export PKG_CONFIG_LIBDIR=/usr/lib64/pkgconfig
+
+%configure --disable-static \
+    --with-shared --with-termlib --enable-widec --enable-pc-files --with-pkg-config=/usr/bin/pkg-config --without-cxx-binding
+
+popd
+
+export CFLAGS="$CFLAGS -m32"
+export PKG_CONFIG_LIBDIR=/usr/lib32/pkgconfig
+
+pushd ../build32
+%configure --disable-static \
+    --with-shared --with-termlib --with-progs --enable-pc-files --with-pkg-config=/usr/bin/pkg-config --without-cxx-binding --libdir=/usr/lib32
+
+make V=1 -j20
+popd
+
+pushd ../build32w
+export PKG_CONFIG_LIBDIR=/usr/lib64/pkgconfig
+
+%configure --disable-static \
+    --with-shared --with-termlib --enable-widec --enable-pc-files --with-pkg-config=/usr/bin/pkg-config --without-cxx-binding --libdir=/usr/lib32
+
+popd
 
 # >> build post
 # << build post
 %install
 rm -rf %{buildroot}
-# >> install pre
-# << install pre
+
+mkdir -p %{buildroot}/usr/lib
+export CFLAGS="$CFLAGS -m32"
+
+pushd ../build32
+%make_install32
+popd
+pushd ../build32w
+%make_install32
+popd
+export CFLAGS="$CFLAGS -m64"
+
 %make_install
-export PKG_CONFIG_LIBDIR=/usr/lib64/pkgconfig
 
-rm misc/pc-files
-%configure --disable-static \
-    --with-shared --with-termlib --enable-widec --enable-pc-files --with-pkg-config=/usr/bin/pkg-config
-
-mkdir %{buildroot}/usr/lib
-
-make V=1 -j8
+pushd ../ncurses-5.9w
+make V=1 -j20
 %make_install
-
-# >> install post
-# << install post
+popd
 
 
 
@@ -150,3 +200,26 @@ echo "INPUT(-lncursesw)" > $RPM_BUILD_ROOT%{_libdir}/libcursesw.so
 %exclude /usr/share/terminfo
 %exclude /usr/share/man
 %exclude /usr/share/tabset
+
+%files lib32
+%exclude /usr/lib32/*.so
+/usr/lib32/libform.so.5
+/usr/lib32/libform.so.5.9
+/usr/lib32/libformw.so.5
+/usr/lib32/libformw.so.5.9
+/usr/lib32/libmenu.so.5
+/usr/lib32/libmenu.so.5.9
+/usr/lib32/libmenuw.so.5
+/usr/lib32/libmenuw.so.5.9
+/usr/lib32/libncurses.so.5
+/usr/lib32/libncurses.so.5.9
+/usr/lib32/libncursesw.so.5
+/usr/lib32/libncursesw.so.5.9
+/usr/lib32/libpanel.so.5
+/usr/lib32/libpanel.so.5.9
+/usr/lib32/libpanelw.so.5
+/usr/lib32/libpanelw.so.5.9
+/usr/lib32/libtinfo.so.5
+/usr/lib32/libtinfo.so.5.9
+/usr/lib32/libtinfow.so.5
+/usr/lib32/libtinfow.so.5.9
