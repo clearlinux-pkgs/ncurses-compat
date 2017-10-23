@@ -1,3 +1,0 @@
-# this is a package mean to stick into 5.9 version, thus we force
-# the watchurl regex
-watchurl=http://mirrors.kernel.org/gnu/ncurses/ncurses-5.9.tar.gz
