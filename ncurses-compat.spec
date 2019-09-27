@@ -72,7 +72,7 @@ export CXXFLGAGS="$CXXFLAGS -std=gnu++98 "
     --with-pkg-config=/usr/bin/pkg-config \
     --without-cxx-binding
 
-make V=1 -j20
+make V=1 %{?_smp_mflags}
 
 pushd ../ncurses-5.9w
 export PKG_CONFIG_LIBDIR=/usr/lib64/pkgconfig
@@ -100,7 +100,7 @@ pushd ../build32
     --without-cxx-binding \
     --libdir=/usr/lib32
 
-make V=1 -j20
+make V=1 %{?_smp_mflags}
 popd
 
 pushd ../build32w
@@ -135,7 +135,7 @@ export CFLAGS="$CFLAGS -m64"
 %make_install
 
 pushd ../ncurses-5.9w
-make V=1 -j20
+make V=1 %{?_smp_mflags}
 %make_install
 popd
 
