@@ -87,7 +87,7 @@ export PKG_CONFIG_LIBDIR=/usr/lib64/pkgconfig
 
 popd
 
-export CFLAGS="$CFLAGS -m32"
+export CFLAGS="$CFLAGS -m32 -mstackrealign"
 export PKG_CONFIG_LIBDIR=/usr/lib32/pkgconfig
 
 pushd ../build32
@@ -121,8 +121,10 @@ popd
 %install
 rm -rf %{buildroot}
 
+CFLAGS_ORIG="$CFLAGS"
+
 mkdir -p %{buildroot}/usr/lib
-export CFLAGS="$CFLAGS -m32"
+export CFLAGS="$CFLAGS_ORIG -m32 -mstackrealign"
 
 pushd ../build32
 %make_install32
@@ -130,7 +132,7 @@ popd
 pushd ../build32w
 %make_install32
 popd
-export CFLAGS="$CFLAGS -m64"
+export CFLAGS="$CFLAGS_ORIG -m64"
 
 %make_install
 
