@@ -1,13 +1,14 @@
 Name:       ncurses-compat
 Summary:    See the file ANNOUNCE for a summary of ncurses features and ports
 Version:    5.9
-Release:    40
+Release:    41
 Group:      System/Libraries
 License:    MIT
 URL:        http://mirrors.kernel.org/gnu/ncurses/ncurses-5.9.tar.gz
 Source0:    http://mirrors.kernel.org/gnu/ncurses/ncurses-5.9.tar.gz
 Patch0:     ncurses-5.9-gcc5_buildfixes-1.patch
 Patch1:     CVE-2018-10754.patch
+Patch2:     CVE-2019-17595.patch
 Requires:   ncurses-lib
 Requires:   ncurses-lib-narrow
 BuildRequires:  python3-dev pkg-config-dev
@@ -53,6 +54,7 @@ Library files for the ncurses package
 %setup -q -n ncurses-5.9
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 pushd ../
 cp -a ncurses-5.9 build32
 cp -a ncurses-5.9 build32w
